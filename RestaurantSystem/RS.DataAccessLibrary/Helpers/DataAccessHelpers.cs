@@ -22,10 +22,8 @@ namespace RS.DataAccessLibrary.Helpers
         /// <param name="connectionStringName">The name of stored procedure stored in the injected config file</param>
         public static async Task CallProcedure<TModel, TParams>(string storedProcedure, TParams parameters, IConfiguration config, string connectionStringName)
         {
-            using (var connection = new SqlConnection(config.GetConnectionString(connectionStringName)))
-            {
-                await connection.QueryAsync<TModel>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-            }
+            using var connection = new SqlConnection(config.GetConnectionString(connectionStringName));
+            await connection.QueryAsync<TModel>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -38,10 +36,8 @@ namespace RS.DataAccessLibrary.Helpers
         /// <param name="connectionStringName">The name of stored procedure stored in the injected config file</param>
         public static async Task<IEnumerable<TModel>> CallProcedureWithCallback<TModel, TParams>(string storedProcedure, TParams parameters, IConfiguration config, string connectionStringName)
         {
-            using (var connection = new SqlConnection(config.GetConnectionString(connectionStringName)))
-            {
-                return await connection.QueryAsync<TModel>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-            }
+            using var connection = new SqlConnection(config.GetConnectionString(connectionStringName));
+            return await connection.QueryAsync<TModel>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
         }
     }
 }

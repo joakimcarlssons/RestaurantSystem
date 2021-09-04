@@ -35,9 +35,9 @@ namespace RS.DataAccessLibrary.Interfaces
         Task<UserModel> GetSingleUser();
 
         /// <summary>
-        /// Save a user to the database
+        /// Updates a user to the database
         /// </summary>
-        Task SaveUser(UserModel user);
+        Task UpdateUser(UserModel user);
 
         #endregion
     }

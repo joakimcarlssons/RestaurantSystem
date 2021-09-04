@@ -45,12 +45,12 @@ namespace RS.DataAccessLibrary.MSSQL
 
         public async Task<UserModel> GetSingleUser()
         {
-            return (await DataAccessHelpers.CallProcedureWithCallback<UserModel, dynamic>("dbo.GetUsers", new { Id = 1 }, _config, CurrentConnectionString)).FirstOrDefault();
+            return (await DataAccessHelpers.CallProcedureWithCallback<UserModel, dynamic>("dbo.GetUsers", new { UserId = 1 }, _config, CurrentConnectionString)).FirstOrDefault();
         }
 
-        public async Task SaveUser(UserModel user)
+        public async Task UpdateUser(UserModel user)
         {
-            await DataAccessHelpers.CallProcedure<UserModel, dynamic>("dbo.SaveUser", user, _config, CurrentConnectionString);
+            await DataAccessHelpers.CallProcedure<UserModel, dynamic>("dbo.UpdateUser", user, _config, CurrentConnectionString);
         }
 
         #endregion

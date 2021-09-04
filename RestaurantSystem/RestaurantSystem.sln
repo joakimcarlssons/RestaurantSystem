@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RS.DataAccessLibrary", "RS.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RS.SharedLibrary", "RS.SharedLibrary\RS.SharedLibrary.csproj", "{BAA79A67-E4F8-4AA1-855F-132E321DFBF3}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "RS.Database", "RS.Database\RS.Database.sqlproj", "{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{BAA79A67-E4F8-4AA1-855F-132E321DFBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAA79A67-E4F8-4AA1-855F-132E321DFBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAA79A67-E4F8-4AA1-855F-132E321DFBF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
