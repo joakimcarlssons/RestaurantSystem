@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[GetUsers]
-	@UserId int
+	@UserId int = NULL
 AS
 	IF (@UserId IS NULL)
 	BEGIN

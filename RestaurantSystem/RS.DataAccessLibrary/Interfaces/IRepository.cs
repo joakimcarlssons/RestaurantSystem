@@ -32,7 +32,7 @@ namespace RS.DataAccessLibrary.Interfaces
         /// Get a single user from the database
         /// </summary>
         /// <returns></returns>
-        Task<UserModel> GetSingleUser();
+        Task<UserModel> GetSingleUser(int userId);
 
         /// <summary>
         /// Updates a user to the database
