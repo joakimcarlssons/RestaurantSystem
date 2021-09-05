@@ -7,7 +7,7 @@ AS
 			UserId
 			,FirstName
 			,LastName
-			,Email
+			,EmailAddress
 		FROM
 			dbo.Users
 	END
@@ -16,7 +16,7 @@ AS
 			UserId
 			,FirstName
 			,LastName
-			,Email
+			,EmailAddress
 		FROM
 			dbo.Users u
 		WHERE

@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RS.DataAccessLibrary", "RS.DataAccessLibrary\RS.DataAccessLibrary.csproj", "{0E01CD0E-08ED-4117-9A85-2201A0FD52F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RS.SharedLibrary", "RS.SharedLibrary\RS.SharedLibrary.csproj", "{BAA79A67-E4F8-4AA1-855F-132E321DFBF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RS.SharedLibrary", "RS.SharedLibrary\RS.SharedLibrary.csproj", "{BAA79A67-E4F8-4AA1-855F-132E321DFBF3}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "RS.Database", "RS.Database\RS.Database.sqlproj", "{A10C02CA-8FE3-4EA9-9A55-3EF7812589C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RS.DAL", "RS.DAL\RS.DAL.csproj", "{9E5861CC-53E9-4918-910F-AF14C2BCAF59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RS.DAL", "RS.DAL\RS.DAL.csproj", "{9E5861CC-53E9-4918-910F-AF14C2BCAF59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

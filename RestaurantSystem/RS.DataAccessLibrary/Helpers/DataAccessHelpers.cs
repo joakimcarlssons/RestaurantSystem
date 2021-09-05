@@ -20,7 +20,7 @@ namespace RS.DataAccessLibrary.Helpers
         /// <param name="parameters">The parameters of the stored procedure to be called</param>
         /// <param name="config">The config file to get the connection string from</param>
         /// <param name="connectionStringName">The name of stored procedure stored in the injected config file</param>
-        public static async Task CallProcedure<TModel, TParams>(string storedProcedure, TParams parameters, IConfiguration config, string connectionStringName)
+        public static async Task CallProcedureAsync<TModel, TParams>(string storedProcedure, TParams parameters, IConfiguration config, string connectionStringName)
         {
             using var connection = new SqlConnection(config.GetConnectionString(connectionStringName));
             await connection.QueryAsync<TModel>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
@@ -34,7 +34,7 @@ namespace RS.DataAccessLibrary.Helpers
         /// <param name="parameters">The parameters of the stored procedure to be called</param>
         /// <param name="config">The config file to get the connection string from</param>
         /// <param name="connectionStringName">The name of stored procedure stored in the injected config file</param>
-        public static async Task<IEnumerable<TModel>> CallProcedureWithCallback<TModel, TParams>(string storedProcedure, TParams parameters, IConfiguration config, string connectionStringName)
+        public static async Task<IEnumerable<TModel>> CallProcedureWithCallbackAsync<TModel, TParams>(string storedProcedure, TParams parameters, IConfiguration config, string connectionStringName)
         {
             using var connection = new SqlConnection(config.GetConnectionString(connectionStringName));
             return await connection.QueryAsync<TModel>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);

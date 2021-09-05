@@ -1,16 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RS.SharedLibrary.Models
+namespace RS.DataAccessLibrary.DTOs.Requests
 {
-    public class UserModel
+    public class RegisterUserRequest
     {
-        public int UserId { get; set; }
+        [Required]
+        [EmailAddress]
         public string EmailAddress { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+
+        [Required]
         public string FirstName { get; set; }
+
+        [Required]
         public string LastName { get; set; }
     }
 }

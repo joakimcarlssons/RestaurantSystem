@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace RS.DAL.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
         #region Private Members

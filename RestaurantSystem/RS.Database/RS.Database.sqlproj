@@ -70,6 +70,9 @@
     <Build Include="Tables\dbo\Users.sql" />
     <Build Include="Stored Procedures\dbo\GetUsers.sql" />
     <Build Include="Stored Procedures\dbo\UpdateUser.sql" />
+    <Build Include="Stored Procedures\dbo\CreateUser.sql" />
+    <Build Include="Stored Procedures\dbo\GetUserSalt.sql" />
+    <Build Include="Stored Procedures\dbo\AttemptLogin.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RS.Database.refactorlog" />
