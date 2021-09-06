@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[CreateUser]
 	@EmailAddress NVARCHAR(50),
 	@Password NVARCHAR(MAX),
-	@Salt NVARCHAR(20),
+	@Salt NVARCHAR(MAX),
 	@FirstName NVARCHAR(50),
 	@LastName NVARCHAR(50)
 AS
