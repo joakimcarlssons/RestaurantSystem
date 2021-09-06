@@ -9,8 +9,15 @@ namespace RS.DataAccessLibrary.DTOs.Responses
 {
     public class UserLoginResponse
     {
+        /// <summary>
+        /// The logged in user
+        /// </summary>
         public UserModel User { get; set; }
-        public string Token { get; set; }
+
+        /// <summary>
+        /// The JWT tokens of the user
+        /// </summary>
+        public TokenResult Tokens { get; set; }
 
         #region Constructors
 
@@ -25,10 +32,10 @@ namespace RS.DataAccessLibrary.DTOs.Responses
         /// <summary>
         /// Initializing constructor
         /// </summary>
-        public UserLoginResponse(UserModel user, string token)
+        public UserLoginResponse(UserModel user, TokenResult tokens)
         {
             User = user;
-            Token = token;
+            Tokens = tokens;
         }
 
         #endregion

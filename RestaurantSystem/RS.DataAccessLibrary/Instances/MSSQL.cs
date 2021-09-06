@@ -39,39 +39,60 @@ namespace RS.DataAccessLibrary.MSSQL
 
         #region Users
 
-        public async Task<IEnumerable<UserModel>> GetAllUsers()
+        public async Task<IEnumerable<UserModel>> GetAllUsersAsync()
         {
             return await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.GetUsers", new { }, _config, CurrentConnectionString);
         }
 
-        public async Task<UserModel> GetSingleUser(int userId)
+        public async Task<UserModel> GetSingleUserAsync(int userId)
         {
             return (await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.GetUsers", new { UserId = userId }, _config, CurrentConnectionString)).FirstOrDefault();
         }
 
-        public async Task UpdateUser(UserModel user)
+        public async Task UpdateUserAsync(UserModel user)
         {
             await DataAccessHelpers.CallProcedureAsync<UserModel, dynamic>("dbo.UpdateUser", user, _config, CurrentConnectionString);
         }
 
-        public async Task<UserModel> CreateUser(RegisterUserRequest user, string salt)
+        public async Task<UserModel> CreateUserAsync(RegisterUserRequest user, string salt)
         {
-            return (await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.CreateUser", 
-                new 
-                { 
-                    @EmailAddress   = user.EmailAddress,
-                    @Password       = user.Password,
-                    @Salt           = salt,
-                    @FirstName      = user.FirstName,
-                    @LastName       = user.LastName
+            return (await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.CreateUser",
+                new
+                {
+                    @EmailAddress = user.EmailAddress,
+                    @Password = user.Password,
+                    @Salt = salt,
+                    @FirstName = user.FirstName,
+                    @LastName = user.LastName
                 }, _config, CurrentConnectionString)).FirstOrDefault();
         }
 
-        public async Task<string> GetUserSalt(string emailAddress)
+        public async Task<string> GetUserSaltAsync(string emailAddress)
             => (await DataAccessHelpers.CallProcedureWithCallbackAsync<string, dynamic>("dbo.GetUserSalt", new { emailAddress }, _config, CurrentConnectionString)).FirstOrDefault();
 
-        public async Task<UserModel> AttemptLogin(string emailAddress, string password)
+        public async Task<UserModel> AttemptLoginAsync(string emailAddress, string password)
             => (await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.AttemptLogin", new { emailAddress, password }, _config, CurrentConnectionString)).FirstOrDefault();
+
+        #endregion
+
+        #region Tokens
+
+        public async Task<RefreshTokenModel> SaveRefreshTokenAsync(RefreshTokenModel refreshToken)
+            => (await DataAccessHelpers.CallProcedureWithCallbackAsync<RefreshTokenModel, dynamic>(
+                "dbo.SaveRefreshToken", 
+                new 
+                { 
+                    refreshToken.UserId, 
+                    refreshToken.Token,
+                    refreshToken.JwtId,
+                    refreshToken.IsUsed,
+                    refreshToken.IsRevoked,
+                    refreshToken.AddedDate,
+                    refreshToken.ExpiryDate
+                }, _config, CurrentConnectionString)).FirstOrDefault();
+
+        public async Task<RefreshTokenModel> GetRefreshTokenAsync(string refreshToken)
+            => (await DataAccessHelpers.CallProcedureWithCallbackAsync<RefreshTokenModel, dynamic>("dbo.GetRefreshToken", new { @Token = refreshToken }, _config, CurrentConnectionString)).FirstOrDefault();
 
         #endregion
     }

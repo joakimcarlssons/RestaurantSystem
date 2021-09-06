@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RS.DataAccessLibrary.Interfaces;
 using RS.SharedLibrary.Models;
@@ -11,6 +13,7 @@ namespace RS.DAL.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
         #region Private Members
@@ -41,7 +44,7 @@ namespace RS.DAL.Controllers
         {
             try
             {
-                var users = await _data.GetAllUsers();
+                var users = await _data.GetAllUsersAsync();
                 return Ok(users);
             }
             catch (Exception ex)
@@ -60,7 +63,7 @@ namespace RS.DAL.Controllers
         {
             try
             {
-                var user = await _data.GetSingleUser(userId);
+                var user = await _data.GetSingleUserAsync(userId);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -83,7 +86,7 @@ namespace RS.DAL.Controllers
                 // Make sure it's the right user sent in
                 if(userId == user.UserId)
                 {
-                    await _data.UpdateUser(user);
+                    await _data.UpdateUserAsync(user);
                     return Ok(user);
                 }
                 else

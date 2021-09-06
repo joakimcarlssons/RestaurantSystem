@@ -1,0 +1,11 @@
+﻿CREATE TABLE [dbo].[RefreshTokens]
+(
+	[TokenId] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	[UserId] INT NOT NULL FOREIGN KEY(UserId) REFERENCES dbo.Users(UserId),
+	[Token] NVARCHAR(MAX) NOT NULL, 
+    [JwtId] NVARCHAR(MAX) NOT NULL, 
+    [IsUsed] BIT NOT NULL DEFAULT 0, 
+    [IsRevoked] BIT NOT NULL DEFAULT 0, 
+    [AddedDate] DATETIME2 NOT NULL, 
+    [ExpiryDate] DATETIME2 NOT NULL
+)

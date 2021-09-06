@@ -11,8 +11,10 @@ namespace RS.DataAccessLibrary.DTOs.Responses
     {
         #region Public Properties
 
+        /// <summary>
+        /// The registered user
+        /// </summary>
         public UserModel User { get; set; }
-        public string Token { get; set; }
 
         #endregion
 
@@ -29,10 +31,9 @@ namespace RS.DataAccessLibrary.DTOs.Responses
         /// <summary>
         /// Initializing constructor
         /// </summary>
-        public RegisterUserResponse(UserModel user, string token)
+        public RegisterUserResponse(UserModel user)
         {
             User = user;
-            Token = token; 
         }
 
         #endregion
