@@ -2,6 +2,8 @@
 using Microsoft.IdentityModel.Tokens;
 using RS.DataAccessLibrary.DTOs;
 using RS.DataAccessLibrary.DTOs.Requests;
+using RS.DataAccessLibrary.DTOs.Responses;
+using RS.DataAccessLibrary.Helpers.Models;
 using RS.DataAccessLibrary.Interfaces;
 using RS.SharedLibrary.Models;
 using System;
@@ -22,41 +24,48 @@ namespace RS.DataAccessLibrary.Helpers
         /// </summary>
         /// <param name="config">The config implementation</param>
         /// <param name="user">The user to generate a token for</param>
-        public static async Task<TokenResult> GenerateTokens(IConfiguration config, UserModel user, IRepository data)
+        public static async Task<AuthResult> GenerateTokens(IConfiguration config, UserModel user, IRepository data)
         {
-            // Initialize token handler
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            // Get key
-            var key = Encoding.ASCII.GetBytes(config["JWTConfig:Secret"]);
-
-            // Setup token
-            var tokenDescriptor = new SecurityTokenDescriptor
+            try
             {
-                Subject = new ClaimsIdentity(new[]
+                // Initialize token handler
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                // Get key
+                var key = Encoding.ASCII.GetBytes(config["JWTConfig:Secret"]);
+
+                // Setup token
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
+                    Subject = new ClaimsIdentity(new[]
+                    {
                     new Claim("Id", user.UserId.ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, user.EmailAddress),
                     new Claim(JwtRegisteredClaimNames.Sub, user.EmailAddress),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
-                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = config["JWTConfig:Issuer"],
-                Audience = config["JWTConfig:Audience"]
-            };
+                    Expires = DateTime.UtcNow.AddSeconds(30),
+                    SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                    Issuer = config["JWTConfig:Issuer"],
+                    Audience = config["JWTConfig:Audience"]
+                };
 
-            // Create the token
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+                // Create the token
+                var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            // Create a refresh token
-            var refreshToken = GenerateRefreshToken(token, user);
+                // Create a refresh token
+                var refreshToken = GenerateRefreshToken(token, user);
 
-            // Save the refresh token to the database
-            await data.SaveRefreshTokenAsync(refreshToken);
+                // Save the refresh token to the database
+                await data.SaveRefreshTokenAsync(refreshToken);
 
-            // Return the tokens
-            return new TokenResult { Token = tokenHandler.WriteToken(token), RefreshToken = refreshToken.Token };
+                // Return the tokens
+                return new AuthResult { Token = tokenHandler.WriteToken(token), RefreshToken = refreshToken.Token };
+            }
+            catch (Exception ex)
+            {
+                return new AuthResult { Error = new ErrorResponse(500, ex.Message) };
+            }
         }
 
         /// <summary>
@@ -83,25 +92,27 @@ namespace RS.DataAccessLibrary.Helpers
         /// <param name="tokenValidationParams">The parameters specified for the tokens</param>
         /// <param name="data">The repository instance</param>
         /// <param name="config">The JWT config instance</param>
-        public static async Task<TokenResult> VerifyAndGenerateToken(TokenRequest tokenRequest, TokenValidationParameters tokenValidationParams, IRepository data, IConfiguration config)
+        public static async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest, TokenValidationParameters tokenValidationParams, IRepository data, IConfiguration config)
         {
             // Create instance of the token handler
             var tokenHandler = new JwtSecurityTokenHandler();
+            var refreshTokenValidationParams = new RefreshTokenValidationParameters(tokenValidationParams);
 
             try
             {
                 #region Validations
 
-                tokenValidationParams.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(config["JWTConfig:Secret"]));
-
                 // 01. Validate JWT token format
-                var tokenInVerification = tokenHandler.ValidateToken(tokenRequest.Token, tokenValidationParams, out var validatedToken);
+                var tokenInVerification = tokenHandler.ValidateToken(tokenRequest.Token, refreshTokenValidationParams, out var validatedToken);
 
                 // 02. Validate the type and encryption of token
                 if (validatedToken is JwtSecurityToken securityToken)
                 {
                     var result = securityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
-                    if (result == false) return null;
+                    if (result == false) return new AuthResult
+                    {
+                        Error = new ErrorResponse(400, "The type of token does not match the type used within this system.")
+                    };
                 }
 
                 // 03. Validate expiry time of token
@@ -114,33 +125,48 @@ namespace RS.DataAccessLibrary.Helpers
                 // If it hasn't expired, then don't refresh it
                 if (expiryDate > DateTime.UtcNow)
                 {
-                    return null;
+                    return new AuthResult
+                    {
+                        Error = new ErrorResponse(400, "Token has not yet expired.")
+                    };
                 }
 
                 // 04. Check that the refresh token exists
                 var storedToken = await data.GetRefreshTokenAsync(tokenRequest.RefreshToken);
                 if (storedToken == null)
                 {
-                    return null;
+                    return new AuthResult
+                    {
+                        Error = new ErrorResponse(404, "Could not find refresh token.")
+                    };
                 }
 
                 // 05. Check if the token is used
                 if (storedToken.IsUsed)
                 {
-                    return null;
+                    return new AuthResult
+                    {
+                        Error = new ErrorResponse(400, "Refresh token has already been used.")                 
+                    };
                 }
 
                 // 06. Ceck if the token has been revoked
                 if (storedToken.IsRevoked)
                 {
-                    return null;
+                    return new AuthResult
+                    {
+                        Error = new ErrorResponse(400, "Refresh token has been revoked.")
+                    };
                 }
 
                 // 07. Make sure the JTI matches
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
                 if (storedToken.JwtId != jti)
                 {
-                    return null;
+                    return new AuthResult
+                    {
+                        Error = new ErrorResponse(400, "Tokens does not match.")                     
+                    };
                 }
 
                 #endregion
@@ -157,7 +183,10 @@ namespace RS.DataAccessLibrary.Helpers
             }
             catch (Exception ex)
             {
-                return null;
+                return new AuthResult
+                {
+                    Error = new ErrorResponse(500, ex.Message)                  
+                };
             }
         }
 
@@ -168,10 +197,7 @@ namespace RS.DataAccessLibrary.Helpers
         private static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             // Get the first day of Utc time
-            var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-
-            // Add the expiry time
-            dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+            var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixTimeStamp);
 
             // Return the result
             return dateTimeVal;
@@ -219,8 +245,6 @@ namespace RS.DataAccessLibrary.Helpers
         {
             // Get the users salt
             var salt = await data.GetUserSaltAsync(user.EmailAddress);
-
-            var pass = user.Password.EncryptPassword(salt);
 
             user.Password = user.Password.EncryptPassword(salt);
 

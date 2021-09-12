@@ -59,11 +59,11 @@ namespace RS.DataAccessLibrary.MSSQL
             return (await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.CreateUser",
                 new
                 {
-                    @EmailAddress = user.EmailAddress,
-                    @Password = user.Password,
+                    user.EmailAddress,
+                    user.Password,
                     @Salt = salt,
-                    @FirstName = user.FirstName,
-                    @LastName = user.LastName
+                    user.FirstName,
+                    user.LastName
                 }, _config, CurrentConnectionString)).FirstOrDefault();
         }
 

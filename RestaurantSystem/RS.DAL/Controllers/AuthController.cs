@@ -117,11 +117,11 @@ namespace RS.DAL.Controllers
             {
                 var result = await AuthHelpers.VerifyAndGenerateToken(tokenRequest, _tokenValidationParams, _data, _config);
 
-                // If the validation fails, return a bad request
-                if (result == null) return BadRequest("Invalid Tokens");
+                // If the validation fails, return the error
+                if (result.Error != null) return StatusCode(result.Error.Code, result.Error.Message);
 
-                // If everything is good, return the result
-                return Ok(result);
+                // If everything is good, return the tokens
+                return Ok(new { result.Token, result.RefreshToken });
             }
             else
             {

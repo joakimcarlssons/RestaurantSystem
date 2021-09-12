@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RS.DataAccessLibrary.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace RS.DataAccessLibrary.DTOs
 {
-    public class TokenResult
+    public class AuthResult
     {
+        /// <summary>
+        /// The error if any, containing the error code and the error message
+        /// </summary>
+        public ErrorResponse Error { get; set; }
+
         /// <summary>
         /// The token
         /// </summary>

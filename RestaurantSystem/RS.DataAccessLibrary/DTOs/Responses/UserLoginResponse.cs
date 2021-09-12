@@ -17,7 +17,7 @@ namespace RS.DataAccessLibrary.DTOs.Responses
         /// <summary>
         /// The JWT tokens of the user
         /// </summary>
-        public TokenResult Tokens { get; set; }
+        public AuthResult Tokens { get; set; }
 
         #region Constructors
 
@@ -32,7 +32,7 @@ namespace RS.DataAccessLibrary.DTOs.Responses
         /// <summary>
         /// Initializing constructor
         /// </summary>
-        public UserLoginResponse(UserModel user, TokenResult tokens)
+        public UserLoginResponse(UserModel user, AuthResult tokens)
         {
             User = user;
             Tokens = tokens;
