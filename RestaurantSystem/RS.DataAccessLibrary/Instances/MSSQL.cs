@@ -75,6 +75,13 @@ namespace RS.DataAccessLibrary.MSSQL
 
         #endregion
 
+        #region Roles
+
+        public async Task<IEnumerable<RoleModel>> GetUserRolesAsync(int userId)
+            => await DataAccessHelpers.CallProcedureWithCallbackAsync<RoleModel, dynamic>("dbo.GetUserRoles", new { userId }, _config, CurrentConnectionString);
+
+        #endregion
+
         #region Tokens
 
         public async Task<RefreshTokenModel> SaveRefreshTokenAsync(RefreshTokenModel refreshToken)

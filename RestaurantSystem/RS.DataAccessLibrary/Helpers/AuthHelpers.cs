@@ -37,18 +37,20 @@ namespace RS.DataAccessLibrary.Helpers
                 // Setup token
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new[]
-                    {
-                    new Claim("Id", user.UserId.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.EmailAddress),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.EmailAddress),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    Subject = new ClaimsIdentity(new[] {
+                        new Claim("Id", user.UserId.ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, user.EmailAddress),
+                        new Claim(JwtRegisteredClaimNames.Sub, user.EmailAddress),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                    Expires = DateTime.UtcNow.AddSeconds(30),
+                    Expires = DateTime.UtcNow.AddHours(1),
                     SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                     Issuer = config["JWTConfig:Issuer"],
                     Audience = config["JWTConfig:Audience"]
                 };
+
+                // Add user roles
+                await AddUserRoles(data, user, tokenDescriptor);
 
                 // Create the token
                 var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -65,6 +67,24 @@ namespace RS.DataAccessLibrary.Helpers
             catch (Exception ex)
             {
                 return new AuthResult { Error = new ErrorResponse(500, ex.Message) };
+            }
+        }
+
+        /// <summary>
+        /// Add user roles as claims to the token
+        /// </summary>
+        /// <param name="data">The repository instance</param>
+        /// <param name="user">The user to get the roles of</param>
+        /// <param name="tokenDescriptor">The <see cref="SecurityTokenDescriptor"/> to add the roles to</param>
+        public static async Task AddUserRoles(IRepository data, UserModel user, SecurityTokenDescriptor tokenDescriptor)
+        {
+            // Get the user roles
+            var userRoles = await data.GetUserRolesAsync(user.UserId);
+
+            // Assign the roles
+            foreach(var role in userRoles)
+            {
+                tokenDescriptor.Subject.AddClaim(new Claim("Roles", role.RoleName));
             }
         }
 

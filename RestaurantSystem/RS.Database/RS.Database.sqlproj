@@ -76,6 +76,9 @@
     <Build Include="Tables\dbo\RefreshTokens.sql" />
     <Build Include="Stored Procedures\dbo\SaveRefreshToken.sql" />
     <Build Include="Stored Procedures\dbo\GetRefreshToken.sql" />
+    <Build Include="Tables\dbo\Roles.sql" />
+    <Build Include="Tables\dbo\UserRoleRelations.sql" />
+    <Build Include="Stored Procedures\dbo\GetUserRoles.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RS.Database.refactorlog" />

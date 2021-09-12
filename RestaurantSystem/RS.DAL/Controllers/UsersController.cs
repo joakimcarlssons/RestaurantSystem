@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using RS.DAL.Claims;
 using RS.DataAccessLibrary.Interfaces;
 using RS.SharedLibrary.Models;
 using System;
@@ -14,6 +15,7 @@ namespace RS.DAL.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ClaimRequirement(ClaimTypes.Roles, "Administrator")]
     public class UsersController : ControllerBase
     {
         #region Private Members

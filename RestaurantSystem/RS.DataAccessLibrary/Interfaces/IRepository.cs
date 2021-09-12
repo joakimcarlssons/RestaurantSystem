@@ -62,6 +62,15 @@ namespace RS.DataAccessLibrary.Interfaces
 
         #endregion
 
+        #region Roles
+
+        /// <summary>
+        /// Get all roles associated with a user
+        /// </summary>
+        Task<IEnumerable<RoleModel>> GetUserRolesAsync(int userId);
+
+        #endregion
+
         #region Tokens
 
         /// <summary>
