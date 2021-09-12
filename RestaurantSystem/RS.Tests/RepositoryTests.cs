@@ -191,6 +191,26 @@ namespace RS.Tests
             Assert.That(Repository.GetAllUsersAsync().Result.Count() == userCount);
         }
 
+        [Test]
+        [TestCase(1, "Updated")]
+        [TestCase(2, "Updated")]
+        public void UpdateUser_ExistingUser_UpdateSucceded(int userId, string firstName)
+        {
+            // Arrange
+            var user = new UserModel
+            {
+                UserId = userId,
+                FirstName = firstName
+            };
+
+            // Act
+            var succeeded = Repository.UpdateUserAsync(user).Result;
+
+            // Assert
+            Assert.That(Repository.MockListOfUsers.FirstOrDefault(u => u.UserId == user.UserId)?.FirstName == user.FirstName);
+            Assert.That(succeeded == true);
+        }
+
         #endregion
 
         #region Tokens
@@ -212,22 +232,6 @@ namespace RS.Tests
             var refreshToken = Repository.GetRefreshTokenAsync(token).Result;
 
             Assert.AreEqual(refreshToken, null);
-        }
-
-        [Test]
-        [TestCase(1, "Updated")]
-        [TestCase(2, "Updated")]
-        public void UpdateUser_ExistingUser_GetUpdatedUser(int userId, string firstName)
-        {
-            var user = new UserModel
-            {
-                UserId = userId,
-                FirstName = firstName
-            };
-
-            Repository.UpdateUserAsync(user);
-
-            Assert.That(Repository.MockListOfUsers.FirstOrDefault(u => u.UserId == user.UserId)?.FirstName == user.FirstName);
         }
 
         #endregion

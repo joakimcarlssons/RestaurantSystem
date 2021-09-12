@@ -38,7 +38,7 @@ namespace RS.DataAccessLibrary.Interfaces
         /// Updates a user to the database
         /// </summary>
         /// <param name="user">The user to update</param>
-        Task UpdateUserAsync(UserModel user);
+        Task<bool> UpdateUserAsync(UserModel user);
 
         /// <summary>
         /// Registers a new user

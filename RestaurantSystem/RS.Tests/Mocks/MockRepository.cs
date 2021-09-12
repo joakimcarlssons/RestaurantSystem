@@ -50,7 +50,7 @@ namespace RS.Tests.Mocks
             return Task.FromResult(refreshToken);
         }
 
-        public Task UpdateUserAsync(UserModel user)
+        public Task<bool> UpdateUserAsync(UserModel user)
         {
             var userToUpdate = MockListOfUsers.FirstOrDefault(u => u.UserId == user.UserId);
 
@@ -58,9 +58,11 @@ namespace RS.Tests.Mocks
             {
                 // Just updating first name for test purpose
                 userToUpdate.FirstName = user.FirstName;
+
+                return Task.FromResult(true);
             }
 
-            return Task.FromResult<object>(null);
+            return Task.FromResult(false);
         }
     }
 }

@@ -1,7 +1,13 @@
 ﻿CREATE PROCEDURE [dbo].[GetUserSalt]
 	@EmailAddress NVARCHAR(50)
 AS
-	SELECT	Salt
-	FROM	dbo.Users
-	WHERE	EmailAddress = @EmailAddress
-RETURN 0
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT	Salt
+			FROM	dbo.Users
+			WHERE	EmailAddress = @EmailAddress
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0 BEGIN ROLLBACK TRAN END
+	END CATCH

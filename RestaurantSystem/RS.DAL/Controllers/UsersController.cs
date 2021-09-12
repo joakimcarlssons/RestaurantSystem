@@ -86,8 +86,10 @@ namespace RS.DAL.Controllers
                 // Make sure it's the right user sent in
                 if(userId == user.UserId)
                 {
-                    await _data.UpdateUserAsync(user);
-                    return Ok(user);
+                    var succeeded = await _data.UpdateUserAsync(user);
+
+                    if (succeeded) return Ok(user);
+                    else return StatusCode(500, "Updated failed on database level.");
                 }
                 else
                 {

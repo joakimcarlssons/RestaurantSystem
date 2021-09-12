@@ -5,25 +5,31 @@
 	@FirstName NVARCHAR(50),
 	@LastName NVARCHAR(50)
 AS
-	INSERT INTO dbo.Users
-	(
-		[EmailAddress],
-		[Password],
-		[Salt],
-		[FirstName],
-		[LastName]
-	)
-	OUTPUT
-		INSERTED.UserId,
-		INSERTED.EmailAddress,
-		INSERTED.FirstName,
-		INSERTED.LastName
-	VALUES
-	(
-		@EmailAddress,
-		@Password,
-		@Salt,
-		@FirstName,
-		@LastName
-	)
-RETURN 0
+	BEGIN TRY
+		BEGIN TRAN
+			INSERT INTO dbo.Users
+			(
+				[EmailAddress],
+				[Password],
+				[Salt],
+				[FirstName],
+				[LastName]
+			)
+			OUTPUT
+				INSERTED.UserId,
+				INSERTED.EmailAddress,
+				INSERTED.FirstName,
+				INSERTED.LastName
+			VALUES
+			(
+				@EmailAddress,
+				@Password,
+				@Salt,
+				@FirstName,
+				@LastName
+			)
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0 BEGIN ROLLBACK TRAN END
+	END CATCH
