@@ -90,8 +90,13 @@ namespace RS.DAL.Controllers
                 // Generate salt
                 var salt = AuthHelpers.GenerateSalt(16);
 
-                // Encrypt password
-                user.Password = user.Password.EncryptPassword(salt);
+                // Encrypt passwords
+                user.Password.EncryptPassword(salt);
+                user.ConfirmPassword.EncryptPassword(salt);
+
+                // Verify the registration request
+                var verifyRegisteredUser = await user.ValidateRegistrationRequest(_data);
+                if (verifyRegisteredUser != null) return StatusCode(verifyRegisteredUser.Code, verifyRegisteredUser.Message);
 
                 // Create the user and retrieve it as a model
                 var newUser = await _data.CreateUserAsync(user, salt);

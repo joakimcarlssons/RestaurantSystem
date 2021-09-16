@@ -19,6 +19,8 @@ namespace RS.DataAccessLibrary.Helpers
 {
     public static class AuthHelpers
     {
+        #region Tokens
+
         /// <summary>
         /// Generate a JWT token
         /// </summary>
@@ -82,7 +84,7 @@ namespace RS.DataAccessLibrary.Helpers
             var userRoles = await data.GetUserRolesAsync(user.UserId);
 
             // Assign the roles
-            foreach(var role in userRoles)
+            foreach (var role in userRoles)
             {
                 tokenDescriptor.Subject.AddClaim(new Claim("Roles", role.RoleName));
             }
@@ -95,15 +97,15 @@ namespace RS.DataAccessLibrary.Helpers
         /// <param name="user">The user connected to the token</param>
         public static RefreshTokenModel GenerateRefreshToken(SecurityToken token, UserModel user)
             => new()
-               {
-                   JwtId = token.Id,
-                   IsUsed = false,
-                   IsRevoked = false,
-                   UserId = user.UserId,
-                   AddedDate = DateTime.UtcNow,
-                   ExpiryDate = DateTime.UtcNow.AddMonths(6),
-                   Token = GenerateSalt(35) + Guid.NewGuid()
-               };
+            {
+                JwtId = token.Id,
+                IsUsed = false,
+                IsRevoked = false,
+                UserId = user.UserId,
+                AddedDate = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddMonths(6),
+                Token = GenerateSalt(35) + Guid.NewGuid()
+            };
 
         /// <summary>
         /// Verifies and generates a new token for the user
@@ -166,7 +168,7 @@ namespace RS.DataAccessLibrary.Helpers
                 {
                     return new AuthResult
                     {
-                        Error = new ErrorResponse(400, "Refresh token has already been used.")                 
+                        Error = new ErrorResponse(400, "Refresh token has already been used.")
                     };
                 }
 
@@ -185,7 +187,7 @@ namespace RS.DataAccessLibrary.Helpers
                 {
                     return new AuthResult
                     {
-                        Error = new ErrorResponse(400, "Tokens does not match.")                     
+                        Error = new ErrorResponse(400, "Tokens does not match.")
                     };
                 }
 
@@ -205,7 +207,7 @@ namespace RS.DataAccessLibrary.Helpers
             {
                 return new AuthResult
                 {
-                    Error = new ErrorResponse(500, ex.Message)                  
+                    Error = new ErrorResponse(500, ex.Message)
                 };
             }
         }
@@ -223,10 +225,14 @@ namespace RS.DataAccessLibrary.Helpers
             return dateTimeVal;
         }
 
+        #endregion
+
+        #region Registration and Login
+
         /// <summary>
         /// Generates a salt to be added to the users password upon encryption
         /// </summary>
-        public static string GenerateSalt(int length) 
+        public static string GenerateSalt(int length)
         {
             // Create a byte array for the salt
             var saltBytes = new byte[length];
@@ -249,16 +255,13 @@ namespace RS.DataAccessLibrary.Helpers
         /// </summary>
         /// <param name="password">The password entered by the user</param>
         /// <returns>The salt of the user</returns>
-        public static string EncryptPassword(this string password, string salt)
+        public static void EncryptPassword(this string password, string salt)
         {
             // Create a hasher
             var hasher = SHA256.Create();
 
             // Encrypt password with an added on salt
-            var encryptedPass = Convert.ToBase64String(hasher.ComputeHash(Encoding.Default.GetBytes(password + salt)));
-
-            // Return the encrypted password
-            return encryptedPass;
+            Convert.ToBase64String(hasher.ComputeHash(Encoding.Default.GetBytes(password + salt)));
         }
 
         public static async Task<UserModel> AttemptLogin(IRepository data, UserLoginRequest user)
@@ -266,9 +269,32 @@ namespace RS.DataAccessLibrary.Helpers
             // Get the users salt
             var salt = await data.GetUserSaltAsync(user.EmailAddress);
 
-            user.Password = user.Password.EncryptPassword(salt);
+            user.Password.EncryptPassword(salt);
 
             return await data.AttemptLoginAsync(user.EmailAddress, user.Password);
         }
+
+        /// <summary>
+        /// Performing internal validation rules against the <see cref="RegisterUserRequest"/>
+        /// </summary>
+        /// <param name="registerUserRequest">The request sent as the registration</param>
+        /// <param name="data">The repository instance to call the database</param>
+        /// <returns>A boolean value indicating whether thhe calidation was successful and a reason string</returns>
+        public static async Task<ErrorResponse> ValidateRegistrationRequest(this RegisterUserRequest registerUserRequest, IRepository data)
+        {
+            // 01. Verify that the email is not in use
+            var emailExistenceResult = await data.VerifyEmailAddressExistence(registerUserRequest.EmailAddress);
+
+            if (emailExistenceResult == 0) return new ErrorResponse(500, "Something went wrong on database level.");
+            else if (emailExistenceResult != null) return new ErrorResponse(400, "Email address already exists");
+
+            // 02. Verify that passwords match
+            if (registerUserRequest.Password != registerUserRequest.ConfirmPassword) return new ErrorResponse(400, "Passwords don't match.");
+
+            // If everything is ok, return null
+            return null;
+        }
+
+        #endregion
     }
 }

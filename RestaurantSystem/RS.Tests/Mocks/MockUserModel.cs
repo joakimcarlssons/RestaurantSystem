@@ -10,5 +10,7 @@ namespace RS.Tests.Mocks
     public class MockUserModel : UserModel
     {
         public string Salt { get; set; }
+
+        public IEnumerable<RoleModel> UserRoles { get; set; }
     }
 }

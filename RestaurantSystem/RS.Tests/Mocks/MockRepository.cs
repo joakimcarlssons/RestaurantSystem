@@ -14,8 +14,10 @@ namespace RS.Tests.Mocks
         #region Mocked Objects
 
         public IEnumerable<UserModel> MockListOfUsers { get; set; } = new List<UserModel>();
+        public IEnumerable<RoleModel> MockListOfRoles { get; set; } = new List<RoleModel>();
         public IEnumerable<RefreshTokenModel> MockListOfTokens { get; set; } = new List<RefreshTokenModel>();
         public IEnumerable<MockUserModel> MockListOfMockUserModel { get; set; } = new List<MockUserModel>();
+
 
         #endregion
 
@@ -42,6 +44,9 @@ namespace RS.Tests.Mocks
 
         public Task<UserModel> GetSingleUserAsync(int userId) => Task.FromResult(MockListOfUsers.FirstOrDefault(u => u.UserId == userId));
 
+        public Task<IEnumerable<RoleModel>> GetUserRolesAsync(int userId)
+            => Task.FromResult(MockListOfMockUserModel.FirstOrDefault(u => u.UserId == userId)?.UserRoles);
+
         public Task<string> GetUserSaltAsync(string emailAddress) => Task.FromResult(MockListOfMockUserModel.FirstOrDefault(u => u.EmailAddress == emailAddress)?.Salt);
 
         public Task<RefreshTokenModel> SaveRefreshTokenAsync(RefreshTokenModel refreshToken)
@@ -64,5 +69,8 @@ namespace RS.Tests.Mocks
 
             return Task.FromResult(false);
         }
+
+        public Task<int?> VerifyEmailAddressExistence(string emailAddress)
+            => Task.FromResult(MockListOfUsers.FirstOrDefault(u => u.EmailAddress == emailAddress)?.UserId);
     }
 }

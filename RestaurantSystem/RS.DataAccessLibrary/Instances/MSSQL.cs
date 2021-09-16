@@ -73,6 +73,10 @@ namespace RS.DataAccessLibrary.MSSQL
         public async Task<UserModel> AttemptLoginAsync(string emailAddress, string password)
             => (await DataAccessHelpers.CallProcedureWithCallbackAsync<UserModel, dynamic>("dbo.AttemptLogin", new { emailAddress, password }, _config, CurrentConnectionString)).FirstOrDefault();
 
+        public async Task<int?> VerifyEmailAddressExistence(string emailAddress)
+            => (await DataAccessHelpers.CallProcedureWithCallbackAsync<int, dynamic>("dbo.VerifyEmailAddressExistence", new { emailAddress }, _config, CurrentConnectionString)).FirstOrDefault();
+
+
         #endregion
 
         #region Roles

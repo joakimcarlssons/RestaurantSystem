@@ -17,6 +17,9 @@ namespace RS.DataAccessLibrary.DTOs.Requests
         public string Password { get; set; }
 
         [Required]
+        public string ConfirmPassword { get; set; }
+
+        [Required]
         public string FirstName { get; set; }
 
         [Required]

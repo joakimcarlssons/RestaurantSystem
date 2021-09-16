@@ -60,6 +60,13 @@ namespace RS.DataAccessLibrary.Interfaces
         /// <param name="password">The password of the user</param>
         Task<UserModel> AttemptLoginAsync(string emailAddress, string password);
 
+        /// <summary>
+        /// Checking if a certain email address is registered within the system
+        /// </summary>
+        /// <param name="emailAddress">The email address to check</param>
+        /// <returns>The id of the user with the email address</returns>
+        Task<int?> VerifyEmailAddressExistence(string emailAddress);
+
         #endregion
 
         #region Roles

@@ -79,6 +79,7 @@
     <Build Include="Tables\dbo\Roles.sql" />
     <Build Include="Tables\dbo\UserRoleRelations.sql" />
     <Build Include="Stored Procedures\dbo\GetUserRoles.sql" />
+    <Build Include="Stored Procedures\dbo\VerifyEmailAddressExistence.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RS.Database.refactorlog" />

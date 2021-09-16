@@ -80,7 +80,20 @@ namespace RS.Tests
                     EmailAddress = Repository.MockListOfUsers.First().EmailAddress,
                     FirstName = Repository.MockListOfUsers.First().FirstName,
                     LastName = Repository.MockListOfUsers.First().LastName,
-                    Salt = "S4L7"
+                    Salt = "S4L7",
+                    UserRoles = new List<RoleModel>
+                    {
+                        new()
+                        {
+                            RoleId = 1,
+                            RoleName = "Admin"
+                        },
+                        new()
+                        {
+                            RoleId = 2,
+                            RoleName = "Employee"
+                        }
+                    }
                 },
                 new()
                 {
@@ -88,7 +101,15 @@ namespace RS.Tests
                     EmailAddress = Repository.MockListOfUsers.Last().EmailAddress,
                     FirstName = Repository.MockListOfUsers.Last().FirstName,
                     LastName = Repository.MockListOfUsers.Last().LastName,
-                    Salt = "S4L7"
+                    Salt = "S4L7",
+                    UserRoles = new List<RoleModel>
+                    {
+                        new()
+                        {
+                            RoleId = 3,
+                            RoleName = "Customer"
+                        }
+                    }
                 },
             };             
         }
@@ -209,6 +230,44 @@ namespace RS.Tests
             // Assert
             Assert.That(Repository.MockListOfUsers.FirstOrDefault(u => u.UserId == user.UserId)?.FirstName == user.FirstName);
             Assert.That(succeeded == true);
+        }
+
+        [Test]
+        [TestCase("first@test.com")]
+        [TestCase("second@test.com")]
+        public void VerifyEmailExistence_ExistingUsers_ReturnUserId(string emailAddress)
+        {
+            var userId = Repository.VerifyEmailAddressExistence(emailAddress).Result;
+            Assert.That(userId == Repository.MockListOfUsers.FirstOrDefault(u => u.EmailAddress == emailAddress).UserId);
+        }
+
+        [Test]
+        [TestCase("fail@fail.com")]
+        public void VerifyEmailExistence_NonExistingUsers_ReturnNull(string emailAddress)
+        {
+            var userId = Repository.VerifyEmailAddressExistence(emailAddress).Result;
+            Assert.That(userId == null);
+        }
+
+        #endregion
+
+        #region Roles
+
+        [Test]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void Get_User_Roles_ExistingUsers_ReturnRoles(int userId)
+        {
+            var roles = Repository.GetUserRolesAsync(userId).Result;
+            Assert.That(roles == Repository.MockListOfMockUserModel.FirstOrDefault(u => u.UserId == userId).UserRoles);
+        }
+
+        [Test]
+        [TestCase(999)]
+        public void Get_User_Roles_NonExistingUsers_ReturnNull(int userId)
+        {
+            var roles = Repository.GetUserRolesAsync(userId).Result;
+            Assert.That(roles == null);
         }
 
         #endregion

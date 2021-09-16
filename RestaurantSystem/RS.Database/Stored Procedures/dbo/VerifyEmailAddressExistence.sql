@@ -1,0 +1,15 @@
+﻿CREATE PROCEDURE [dbo].[VerifyEmailAddressExistence]
+	@EmailAddress NVARCHAR(MAX)
+AS
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT	UserId
+			FROM	dbo.Users u
+			WHERE	u.EmailAddress = @EmailAddress
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0 BEGIN ROLLBACK TRAN END
+		SELECT 0
+	END CATCH
+
