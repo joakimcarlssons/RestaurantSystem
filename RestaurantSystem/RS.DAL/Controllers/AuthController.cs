@@ -8,6 +8,7 @@ using RS.DataAccessLibrary.DTOs.Requests;
 using RS.DataAccessLibrary.DTOs.Responses;
 using RS.DataAccessLibrary.Helpers;
 using RS.DataAccessLibrary.Interfaces;
+using RS.SharedLibrary.Helpers;
 using RS.SharedLibrary.Models;
 using System;
 using System.Collections.Generic;
@@ -131,6 +132,35 @@ namespace RS.DAL.Controllers
             else
             {
                 return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Sends an email to the given email address with a link containing a token to reset the password of a user.
+        /// </summary>
+        /// <param name="emailAddress">The email address to reset the password for</param>
+        [HttpPost]
+        [Route("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(string emailAddress)
+        {
+            // Make sure an email adress is given
+            if (!String.IsNullOrEmpty(emailAddress))
+            {
+                // Make sure the email adress is in a valid format
+                if (!emailAddress.ValidateEmailAddress()) return BadRequest("The given email address is not valid.");
+
+                // Make sure the email address exists
+                else if ((await _data.VerifyEmailAddressExistence(emailAddress) ?? 0) == 0) return BadRequest("The given email address was not found.");
+
+                // Send an email to the user
+                else
+                {
+                    return Ok($"An email with further instructions have been sent to { emailAddress }");
+                }
+            }
+            else
+            {
+                return BadRequest("Please provide an email adress.");
             }
         }
     }

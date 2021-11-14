@@ -5,6 +5,7 @@ using RS.DataAccessLibrary.DTOs.Requests;
 using RS.DataAccessLibrary.DTOs.Responses;
 using RS.DataAccessLibrary.Helpers.Models;
 using RS.DataAccessLibrary.Interfaces;
+using RS.SharedLibrary.Helpers;
 using RS.SharedLibrary.Models;
 using System;
 using System.Collections.Generic;
@@ -282,13 +283,16 @@ namespace RS.DataAccessLibrary.Helpers
         /// <returns>A boolean value indicating whether thhe calidation was successful and a reason string</returns>
         public static async Task<ErrorResponse> ValidateRegistrationRequest(this RegisterUserRequest registerUserRequest, IRepository data)
         {
-            // 01. Verify that the email is not in use
+            // 01. Verify that the email is valid
+            if (!registerUserRequest.EmailAddress.ValidateEmailAddress()) return new ErrorResponse(400, "Email address in not valid.");
+
+            // 02. Verify that the email is not in use
             var emailExistenceResult = await data.VerifyEmailAddressExistence(registerUserRequest.EmailAddress);
 
             if (emailExistenceResult == 0) return new ErrorResponse(500, "Something went wrong on database level.");
             else if (emailExistenceResult != null) return new ErrorResponse(400, "Email address already exists");
 
-            // 02. Verify that passwords match
+            // 03. Verify that passwords match
             if (registerUserRequest.Password != registerUserRequest.ConfirmPassword) return new ErrorResponse(400, "Passwords don't match.");
 
             // If everything is ok, return null
